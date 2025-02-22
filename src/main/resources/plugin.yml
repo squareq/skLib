@@ -1,0 +1,7 @@
+name: BCD-skLib
+main: org.bcdtech.Main
+version: @version@
+api-version: 1.21
+description: @description@
+depend:
+  - Skript

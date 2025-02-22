@@ -1,0 +1,81 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import java.time.LocalTime
+
+
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'checkstyle'
+}
+
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // Replace 17 with your desired version
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+group = 'org.bcdtech'
+version = '1.0-PROD'
+
+
+task release(type: ProcessResources) {
+    from 'src/main/resources', {
+        include '**'
+        version = project.property('version')
+        def description = ''
+        if (version.contains('DEV'))
+            description = 'A wip version of SkLib made for Blue Cheese Development projects.'
+        if (version.contains('PROD'))
+            description = 'A working version of SkLib made for Blue Cheese Development projects.'
+        filter ReplaceTokens, tokens: [
+                'version': version,
+                'description': description,
+        ]
+    }
+    into 'build/resources/main'
+}
+
+tasks.named('shadowJar', ShadowJar) {
+    from 'src/main/java'
+    //from 'src/main/resources'
+    include '**/*'  // Include all files in these directories
+    dependencies {
+        from 'skLib'
+        include(dependency('io.lettuce:lettuce-core:6.6.0.BETA2'))
+        include(dependency('io.projectreactor:reactor-core:3.6.6'))
+        include(dependency('org.reactivestreams:reactive-streams:1.0.4'))
+    }
+    dependsOn release
+    archiveFileName = 'skLib-' + version + '.jar'
+
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.papermc.io/repository/maven-public/' }
+    maven { url 'https://repo.skriptlang.org/releases' } // Skript
+    maven { url 'https://mvnrepository.com/artifact/org.apache.commons/commons-pool2' }
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' } // Lettuce
+}
+
+dependencies {
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation('io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT')
+    implementation 'com.github.SkriptLang:Skript:2.10.0'
+    implementation 'io.lettuce:lettuce-core:6.6.0.BETA2'
+    implementation("com.gradleup.shadow:com.gradleup.shadow.gradle.plugin:9.0.0-beta8")
+}
+
+test {
+    useJUnitPlatform()
+}
