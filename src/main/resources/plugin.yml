@@ -3,5 +3,6 @@ main: org.bcdtech.Main
 version: @version@
 api-version: 1.21
 description: @description@
+website: https://github.com/squareq/skLib
 depend:
   - Skript
