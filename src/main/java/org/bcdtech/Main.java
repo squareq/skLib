@@ -127,7 +127,6 @@ public class Main extends JavaPlugin {
 
             }
         };
-        Util.Log(Component.text("Registering listener"));
         getRedisSubscriber().addListener(listener);
     }
 
@@ -137,7 +136,6 @@ public class Main extends JavaPlugin {
 
     public static void registerChannel(String channel){
         getRedisSubscriber().async().subscribe(channel);
-        Util.Log(Component.text("Registering channel " + channel));
     }
 
     public static void sendRedisMsg(String channel, String msg){

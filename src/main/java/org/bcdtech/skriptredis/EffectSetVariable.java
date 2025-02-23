@@ -48,9 +48,7 @@ extends AsyncEffect {
     }
 
     protected void execute(final Event arg0) {
-        Util.Log(Component.text("Key: " + key.toString() + " Value: " + value.toString()));
         String result = getRedisPublisher().sync().set(key.toString(), value.toString());
-        Util.Log(Component.text("Result: " + result));
 
     }
 
